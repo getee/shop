@@ -1,6 +1,15 @@
 package com.myshop.model;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+
+import static com.myshop.until.HibernateSessionFactory.getSession;
 
 public class UserDAOImp extends BaseDAOImp implements UserDAO  {
 
@@ -10,7 +19,7 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
     @Override
     public User getIDUser(int id) {
         User u=null;
-        ResultSet rs=null;
+        /*ResultSet rs=null;
         Statement sta=getSta();
         try {
             rs=sta.executeQuery("select * from user where user_id="+id);
@@ -27,7 +36,9 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        disposeResource(sta,rs);
+        disposeResource(sta,rs);*/
+        Session s=getSession();
+        u=(User) s.get(User.class, id);
         return u;
     }
     
@@ -37,7 +48,8 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
     
     public User getNameUser(String name) {    //如果返回值为null则允许用户注册
         User u=null;
-        ResultSet rs=null;
+        ArrayList<User> us=new ArrayList<>();
+        /*ResultSet rs=null;
         Statement sta=getSta();
         try {
             rs=sta.executeQuery("select * from user where user_name='"+name+"'");
@@ -54,7 +66,16 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        disposeResource(sta,rs);
+        disposeResource(sta,rs);*/
+        Session s=getSession();
+        Criteria cri=s.createCriteria(User.class);
+        cri.add(Restrictions.eq("name", name));
+
+        us=(ArrayList<User>) cri.list();
+        if(us.size()==0){
+            return null;
+        }
+        u=us.get(0);
         return u;
     }
     
@@ -63,9 +84,10 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
      * @return
      */
     public int getSize() {
-        ResultSet rs=null;
-        Statement sta=getSta();
         int top=0;//指向第一行
+        /*ResultSet rs=null;
+        Statement sta=getSta();
+        
         String sql="select count(user_name) from user";
         try {
             rs=sta.executeQuery(sql);
@@ -74,7 +96,11 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        disposeResource(sta,rs);
+        disposeResource(sta,rs);*/
+        Session s=getSession();
+        Criteria cri=s.createCriteria(User.class);
+        cri.setProjection(Projections.rowCount());//聚合查询
+        top=Integer.parseInt(String.valueOf(cri.uniqueResult()));//唯一结果输出
         return top;
     }
     
@@ -94,19 +120,29 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
         if(u.getAddress()==null){//未初始化
             u.setAddress("");//赋初始值，显示空
         }
-        if(u.getPhone()==000){//未初始化
-            u.setPhone(000);//赋初始值，显示空
+        if(u.getPhone()==0){//未初始化
+            u.setPhone(0);//赋初始值，显示空
         }
-        Statement sta=getSta();
-        try {
-            String sql="update user set user_name='"+u.getName()+"', address='"+u.getAddress()+"', phone="+u.getPhone()+", picture='"+u.getPicture()+"' where user_id="+u.getId();
-            int i=sta.executeUpdate(sql);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
+//        Statement sta=getSta();
+//        try {
+//            String sql="update user set user_name='"+u.getName()+"', address='"+u.getAddress()+"', phone="+u.getPhone()+", picture='"+u.getPicture()+"' where user_id="+u.getId();
+//            int i=sta.executeUpdate(sql);
+//        } catch (SQLException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//            return false;
+//        }
+//        disposeResource(sta);
+        Session s=getSession();
+        Transaction tr=s.beginTransaction();
+        try{
+            s.update(u);
+            tr.commit();
+        }catch(Exception e){
+            tr.rollback();
             e.printStackTrace();
             return false;
         }
-        disposeResource(sta);
         return true;
     }
     
@@ -118,7 +154,7 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
      */
     public boolean addUser(String name,String password) {
         if(getNameUser(name)!=null) return false;//用户名已被占用
-        Statement sta=getSta();
+        /*Statement sta=getSta();
         try {
             String sql="insert into user(user_name,password,picture) values('"+name+"','"+password+"','images/undefine.jpg')";
             int i=sta.executeUpdate(sql);
@@ -128,7 +164,21 @@ public class UserDAOImp extends BaseDAOImp implements UserDAO  {
             e.printStackTrace();
             return false;
         }
-        disposeResource(sta);
+        disposeResource(sta);*/
+        Session s=getSession();
+        Transaction tr=s.beginTransaction();
+        User u=new User();
+        u.setName(name);
+        u.setPassword(password);
+        u.setPicture("images/undefine.jpg");
+        try{
+            s.save(u);
+            tr.commit();
+        }catch(Exception e){
+            tr.rollback();
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 

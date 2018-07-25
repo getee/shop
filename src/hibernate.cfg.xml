@@ -25,6 +25,7 @@
 	        <property name="format_sql">true</property>
 	        
 	        <mapping resource="com/myshop/model/wine.hbm.xml"/>
+	        <mapping resource="com/myshop/model/user.hbm.xml"/>
         </session-factory>
     
     

@@ -3,6 +3,14 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.myshop.model" auto-import="true">
+    <class name="Wine" table="wine">
+        <id name="id" column="wine_id"></id>
+        <property name="name" column="wine_name"></property>
+        <property name="kind"></property>
+        <property name="price" type="float"></property>
+        <property name="detail" type="text"></property>
+        <property name="picture"></property>
+    </class>
     
 
 </hibernate-mapping>

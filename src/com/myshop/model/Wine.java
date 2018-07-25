@@ -1,6 +1,8 @@
 package com.myshop.model;
 
-public class Wine {
+import java.io.Serializable;
+
+public class Wine implements Serializable{
     private int id;
     private String name;
     private String kind;

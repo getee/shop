@@ -81,7 +81,7 @@ public class ShoppingCarDAOImp extends BaseDAOImp implements ShoppingCarDAO {
                     wine.setId(rsw.getInt("wine_id"));
                     wine.setName(rsw.getString("wine_name"));
                     wine.setKind(rsw.getString("kind"));
-                    wine.setPrice(rsw.getDouble("price"));
+                    wine.setPrice(rsw.getFloat("price"));
                     wine.setDetail(rsw.getString("detail"));
                     wine.setPicture(rsw.getString("picture"));
                     
@@ -107,7 +107,7 @@ public class ShoppingCarDAOImp extends BaseDAOImp implements ShoppingCarDAO {
     public HashMap<Wine, Integer> get(int uid) {
         HashMap<Integer,Integer> widANDnum=new HashMap<>();
         HashMap<Wine,Integer> shoppingCar=new HashMap<>();
-        Statement sta=getSta();
+        /*Statement sta=getSta();
         ResultSet rsc=null;
         ResultSet rsw=null;
         String carSQL="select * from shopcar where user_id="+uid+"";
@@ -145,7 +145,7 @@ public class ShoppingCarDAOImp extends BaseDAOImp implements ShoppingCarDAO {
             e.printStackTrace();
             return null;
         }
-        disposeResource(sta,rsw);
+        disposeResource(sta,rsw);*/
         
         return shoppingCar;
     }
